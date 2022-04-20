@@ -11,7 +11,7 @@ using namespace std;
 #include <cublas_v2.h>
 #include <vector>
 #include "backend/readMtx.hpp"
-#include "backend/csr2bsr_batch.cu"
+#include "backend/csr2b2sr_batch.cu"
 
 // csr metadata
 int nrows, ncols, nnz;
