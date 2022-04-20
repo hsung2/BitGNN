@@ -3,49 +3,46 @@ CC = nvcc
 FLAGS = -arch=sm_60 -O3 -std=c++11 -w -maxrregcount=64 -rdc=true
 LINK = -lcublas -lcusparse -lcudart
 
-spmmtest: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
-		$(CC) $(FLAGS) $(LINK) test_spmm_bin_bin.cu -DTILEDIM=4 -DOUTUNIT=16 -o spmm/$@
-
 # baseline
-baseline: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+baseline: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_baseline.cu -o spmm/$@
 
 # spmm bin-bin
 spmmbb: spmmbb2 spmmbb4 spmmbb8 spmmbb16
-spmmbb2: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmbb2: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_bin_bin.cu -DTILEDIM=4 -DOUTUNIT=2 -o spmm/$@
-spmmbb4: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmbb4: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_bin_bin.cu -DTILEDIM=4 -DOUTUNIT=4 -o spmm/$@
-spmmbb8: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmbb8: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_bin_bin.cu -DTILEDIM=4 -DOUTUNIT=8 -o spmm/$@
-spmmbb16: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmbb16: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_bin_bin.cu -DTILEDIM=4 -DOUTUNIT=16 -o spmm/$@
 
 # spmm full-bin
 spmmfb: spmmfb2 spmmfb4 spmmfb8 spmmfb16
-spmmfb2: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmfb2: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_bin.cu -DTILEDIM=4 -DOUTUNIT=2 -o spmm/$@
-spmmfb4: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmfb4: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_bin.cu -DTILEDIM=4 -DOUTUNIT=4 -o spmm/$@
-spmmfb8: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmfb8: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_bin.cu -DTILEDIM=4 -DOUTUNIT=8 -o spmm/$@
-spmmfb16: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmfb16: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_bin.cu -DTILEDIM=4 -DOUTUNIT=16 -o spmm/$@
 
 # spmm full-full # lack 4 8
 spmmff: spmmff1 spmmff2 spmmff4 spmmff8
-spmmff1: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmff1: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=1 -o spmm/$@
-spmmff2: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmff2: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=2 -o spmm/$@
-spmmff4: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmff4: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=4 -o spmm/$@
-spmmff8: backend/spmm.cu backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+spmmff8: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=8 -o spmm/$@
 
 # b2sr test
-b2srtest: backend/utility.cu backend/csr2bsr_batch_bsrbmv.cu
+b2srtest: backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) b2sr_test.cu -o $@
 
 clean: 
-	rm -f b2srtest spmm/*
+	rm -f spmm/*
