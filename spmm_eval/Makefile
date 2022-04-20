@@ -29,7 +29,7 @@ spmmfb8: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 spmmfb16: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_bin.cu -DTILEDIM=4 -DOUTUNIT=16 -o spmm/$@
 
-# spmm full-full # lack 4 8
+# spmm full-full
 spmmff: spmmff1 spmmff2 spmmff4 spmmff8
 spmmff1: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=1 -o spmm/$@
@@ -39,10 +39,6 @@ spmmff4: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=4 -o spmm/$@
 spmmff8: backend/spmm.cu backend/utility.cu backend/csr2b2sr_batch.cu
 		$(CC) $(FLAGS) $(LINK) test_spmm_full_full.cu -DTILEDIM=4 -DOUTUNIT=8 -o spmm/$@
-
-# b2sr test
-b2srtest: backend/utility.cu backend/csr2b2sr_batch.cu
-		$(CC) $(FLAGS) $(LINK) b2sr_test.cu -o $@
 
 clean: 
 	rm -f spmm/*
