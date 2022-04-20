@@ -11,7 +11,7 @@ using namespace std;
 #include <cublas_v2.h>
 #include <vector>
 #include "backend/readMtx.hpp"
-#include "backend/csr2bsr_batch_bsrbmv.cu"
+#include "backend/csr2bsr_batch.cu"
 
 // bin-full
 
@@ -57,7 +57,7 @@ int *cscRowInd, *cscColPtr;
 float *cscVal;
 
 // result mat
-float* hC;
+float *hC;
 
 // Bmat host
 int nBrows, nBcols;
@@ -65,7 +65,6 @@ int outunit;
 
 // Bmat device
 float *B;
-
 
 // cusparse handles
 cusparseMatDescr_t csr_descr = 0;
@@ -107,7 +106,7 @@ double evalCSRSpmmFloatCuSPARSE() // cusparse spmm
     // // covert B from row-major to col-major
     // B_col_major = (float *)malloc(sizeof(float) * nBrows * nBcols);
     // int cnt = 0;
-    // for (int i=0; i<nBcols; i++) 
+    // for (int i=0; i<nBcols; i++)
     // {
     //     for (int j=0; j<nBrows; j++)
     //     {
@@ -132,7 +131,7 @@ double evalCSRSpmmFloatCuSPARSE() // cusparse spmm
     for (int i = 0; i < C_size; i++)
     {
         hC[i] = 0.0f;
-    } 
+    }
 
 #if TEST_TIMES > 1
     float alpha = 1.0, beta = 1.0;
@@ -196,10 +195,10 @@ double evalCSRSpmmFloatCuSPARSE() // cusparse spmm
     for (int i = 0; i < TEST_TIMES; i++)
     {
         cusparseSpMM(handle,
-                    CUSPARSE_OPERATION_NON_TRANSPOSE,
-                    CUSPARSE_OPERATION_NON_TRANSPOSE,
-                    &alpha, matA, matB, &beta, matC, CUDA_R_32F,
-                    CUSPARSE_SPMM_ALG_DEFAULT, dBuffer);
+                     CUSPARSE_OPERATION_NON_TRANSPOSE,
+                     CUSPARSE_OPERATION_NON_TRANSPOSE,
+                     &alpha, matA, matB, &beta, matC, CUDA_R_32F,
+                     CUSPARSE_SPMM_ALG_DEFAULT, dBuffer);
         // CHECK_CUSPARSE(cusparseSpMM(handle,
         //                     CUSPARSE_OPERATION_NON_TRANSPOSE,
         //                     CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -221,7 +220,7 @@ double evalCSRSpmmFloatCuSPARSE() // cusparse spmm
     // // hC from col-major to row-major
     // hC_row_major = (float *)malloc(sizeof(float) * C_size);
     // cnt = 0;
-    // for (int i=0; i<nBrows; i++) 
+    // for (int i=0; i<nBrows; i++)
     // {
     //     for (int j=0; j<nBcols; j++)
     //     {
@@ -262,7 +261,7 @@ int main(int argc, char *argv[])
 
     cudaSetDevice(0);
     readMtxCSR(Amtxfile);
-    nBrows = nrows; 
+    nBrows = nrows;
 
     B = (float *)malloc(sizeof(float) * nBrows * nBcols);
     srand(time(0));

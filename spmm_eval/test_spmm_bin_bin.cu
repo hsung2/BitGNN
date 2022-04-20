@@ -11,7 +11,7 @@ using namespace std;
 #include <cublas_v2.h>
 #include <vector>
 #include "backend/readMtx.hpp"
-#include "backend/csr2bsr_batch_bsrbmv_new.cu"
+#include "backend/csr2bsr_batch.cu"
 
 // csr metadata
 int nrows, ncols, nnz;
@@ -168,18 +168,17 @@ double evalB2SRSpmmBin32()
     // init C (result storage)
     cudaMalloc(&fC, FEIL(nrows) * CEIL(nBcols) * sizeof(unsigned));
     cudaMemset(fC, 0, FEIL(nrows) * CEIL(nBcols) * sizeof(unsigned));
-    int gridDim = (int)ceil(cbrt((double)nblockrows/32)); // should /32 when use 1 warp
+    int gridDim = (int)ceil(cbrt((double)nblockrows / 32)); // should /32 when use 1 warp
     dim3 grid(gridDim, gridDim, gridDim);
 
-    int gridDim2 = (int)ceil(cbrt((double)nblockrows/16)); // should /16 when use 2 warps
+    int gridDim2 = (int)ceil(cbrt((double)nblockrows / 16)); // should /16 when use 2 warps
     dim3 grid2(gridDim2, gridDim2, gridDim2);
 
-    int gridDim3 = (int)ceil(cbrt((double)nblockrows/8)); // should /8 when use 4 warps
+    int gridDim3 = (int)ceil(cbrt((double)nblockrows / 8)); // should /8 when use 4 warps
     dim3 grid3(gridDim3, gridDim3, gridDim3);
 
-    int gridDim4 = (int)ceil(cbrt((double)nblockrows/4)); // should /4 when use 8 warps
+    int gridDim4 = (int)ceil(cbrt((double)nblockrows / 4)); // should /4 when use 8 warps
     dim3 grid4(gridDim4, gridDim4, gridDim4);
-
 
     // ------
     GpuTimer b2sr_timer;
@@ -189,18 +188,18 @@ double evalB2SRSpmmBin32()
     {
 #if TILEDIM == 4
 
-#if OUTUNIT == 1    
-    spmm4_bin_op_1_1024<<<grid, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows);
+#if OUTUNIT == 1
+        spmm4_bin_op_1_1024<<<grid, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows);
 #elif OUTUNIT == 2
-    spmm4_bin_op_2_1024<<<grid, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
+        spmm4_bin_op_2_1024<<<grid, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
 #elif OUTUNIT == 4
-    spmm4_bin_op_4_1024<<<grid2, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
+        spmm4_bin_op_4_1024<<<grid2, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
 #elif OUTUNIT == 8
-    spmm4_bin_op_8_1024_128<<<grid3, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
+        spmm4_bin_op_8_1024_128<<<grid3, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
 #elif OUTUNIT == 16
-    spmm4_bin_op_16_1024<<<grid3, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
+        spmm4_bin_op_16_1024<<<grid3, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
 #else
-    spmm4_bin_op_24<<<grid4, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
+        spmm4_bin_op_24<<<grid4, 1024>>>(tA, tB, fC, bsrRowPtr, bsrColInd, nblockrows, FEIL(nrows));
 #endif
 
 #elif TILEDIM == 8
@@ -262,7 +261,7 @@ int main(int argc, char *argv[])
     cudaSetDevice(0);
     readMtxCSR(Amtxfile);
     CSR2B2SR();
-    nBrows = nrows; 
+    nBrows = nrows;
 
     B = (float *)malloc(sizeof(float) * nBrows * nBcols);
     srand(time(0));
